@@ -6,7 +6,7 @@ from pprint import pprint
 # 1001 c_memorable_moments.txt
 # 90001 d_pet_pictures.txt
 # 80001 e_shiny_selfies.txt
-from random import choice, sample
+from random import choice, sample, shuffle
 
 
 class Pic:
@@ -56,17 +56,17 @@ keep_going = True
 pic = choice(horiz_pics)
 horiz_pics.remove(pic)
 solution.append(pic)
-
+#
 fnl_score = 0
-
+#
 while keep_going:
     # print(len(horiz_pics))
-    tags_sample = sample(pic.tags, max(int(.05*len(pic.tags)),1))
+    tags_sample = pic.tags # sample(pic.tags, max(int(.05*len(pic.tags)),1))
 
-    my_sample = sample(horiz_pics, min(100,max(int(0.05*len(horiz_pics)),1)))
+    my_sample = sample(horiz_pics, max(int(0.01*len(horiz_pics)),1))
 
     for p in my_sample:
-        if len(p.tags.intersection(tags_sample))<len(tags_sample)*0.05: #play here
+        if len(p.tags.intersection(tags_sample))<len(tags_sample)*0.25: #play here
             if len(my_sample) <= 1:
                 break
             my_sample.remove(p)
@@ -88,13 +88,24 @@ while keep_going:
     fnl_score+=score(pic,next_pic)
     pic = next_pic
 
+shuffle(vert_pics)
+for i in range(0,len(vert_pics),2):
+    a = vert_pics[i]
+    b = vert_pics[i+1]
+
+    fnl_score+=score(a,b)
+    solution.append([a,b])
 
 print("SCORE {}".format(fnl_score))
 out = open(sys.argv[1]+".output", "wt")
 out.write("{}\n".format(int(len(solution))))
 
 for p in solution:
-    out.write("{}\n".format(p.id))
+    if isinstance(p, list):
+        out.write("{} {}\n".format(p[0].id, p[1].id))
+    else:
+        out.write("{}\n".format(p.id))
+
 # out.write("{}\n".format(int(len(horiz_pics) + len(vert_pics)/2)))
 # for i in range(0,len(vert_pics), 2):
 #     out.write("{} {}\n".format(vert_pics[i].id, vert_pics[i+1].id))
